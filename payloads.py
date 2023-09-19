@@ -4,12 +4,14 @@ import util
 from websockets.sync.client import ClientConnection
 
 
-def heartbeat(ws: ClientConnection, interval: int):
+def heartbeat(ws: ClientConnection, interval: int, last_sequence={}):
+
+    # HACK: Can we improve this?
 
     # Create reply
     reply = dumps({
         "op": GatewayOpcode.HEARTBEAT_SEND_RECEIVE.value,
-        "d": {}
+        "d": last_sequence
     })
 
     # Send heartbeat
