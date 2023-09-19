@@ -16,7 +16,7 @@ def heartbeat(ws: ClientConnection, interval: int, last_sequence={}):
 
     # Send heartbeat
     ws.send(reply)
-    print(util.load_filter(ws.recv()))
+    print(util.load_filter(ws.recv(timeout=15)))
 
 
 class GenericEventPayload():

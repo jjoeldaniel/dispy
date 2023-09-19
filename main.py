@@ -21,10 +21,13 @@ async def heartbeat():
 
         # Heartbeat
         while True:
-            payloads.heartbeat(ws, heartbeat_interval)
-            await asyncio.sleep(heartbeat_interval)
-
-        return ws
+            try:
+                payloads.heartbeat(ws, heartbeat_interval)
+            except TimeoutError as e:
+                ws.close(1006)
+                print(e)
+            else:
+                await asyncio.sleep(heartbeat_interval)
 
 
 def main():
