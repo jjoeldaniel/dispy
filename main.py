@@ -1,37 +1,17 @@
-from websockets.sync.client import connect
-import random
+from websockets.sync.client import ClientConnection, connect
 import payloads
-import constants
 import asyncio
-
-
-async def heartbeat():
-
-    # NOTE: We should probably move this function
-
-    with connect(constants.GATEWAY_URL) as ws:
-
-        # Send initial payload and get heartbeat interval
-        payload = payloads.GenericEventPayload(ws.recv())
-        heartbeat_interval = payload.response['d']['heartbeat_interval'] / 1000
-
-        # Wait until first heartbeat
-        sleep_time = random.uniform(0, 1) * heartbeat_interval
-        await asyncio.sleep(sleep_time)
-
-        # Heartbeat
-        while True:
-            try:
-                payloads.heartbeat(ws, heartbeat_interval)
-            except TimeoutError as e:
-                ws.close(1006)
-                print(e)
-            else:
-                await asyncio.sleep(heartbeat_interval)
+import heartbeat
+import constants
 
 
 def main():
-    asyncio.run(heartbeat())
+    TOKEN = ""
+
+    ws: ClientConnection = connect(constants.GATEWAY_URL)
+
+    asyncio.run(heartbeat.start(ws))
+    # identify_payload = payloads.IdentifyPayload(TOKEN, [])
 
 
 if __name__ == "__main__":
